@@ -1,0 +1,14 @@
+{
+  "name": "meal-repo",
+  "version": "0.0.1",
+  "description": "A repository of personal restaurant and meal information to look back on and remember your experiences.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Chong",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
