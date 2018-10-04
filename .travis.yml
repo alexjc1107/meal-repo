@@ -1,2 +1,9 @@
 language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: cZ1FGchbXo9AmL3lRcDPCzrvYUCOKWybhJIVPE3oYlgyCdGPPid9KjKR+lB9I5jnxl3ONaPOfJHgm/inf+8LDzCPA+Gps33w4CH3sIKQN7aDmrhf9+iI7DORvDGZdpT+hXCo9kdwAdUg6qnttTno3W14aRJ2wVhU3btfjVWjU3cCHG5Fd5Jf8Zg3010yX3y4QqwJRNoDUdofcrijazSnZMP29qpHMs4TpDekzu/BaKWoWVaZtiTtleDOiw2QvOTpXyNIsJzA+/gVkvoWLjnTrrjEXRtmnu/HTChjD5QYQECOUzUnIH6vqzkO27FEwlokSfQKITwDUcUBWwurHHwV2po89LoWHGhINtBSNKcM+qiBt1lNgKbvFu5lBkN8M0mBcormHmXRZ7OpWv0GgCnMM5RfroiOLH2wONpjdtdnayJ6c1ZS+eXJQX+BAgwhLRXtxDo0M+AEzCNRS+AfaQGOYKSd0i7OUc1X0gycFcuvliWtsZ5UX5Qj2mFDkwVFuBuoyZPltN8N7AzTjCdnjWCfNRNPoBWjryJ42WHxEXY4h/Tu8H94mQi5s8Ib9Icg5ESbffJk6KtTtXqVKYys5/M5/q9qMWZtehqJkNMJlSLGUI+76g1EssF8nSho61eCEwdqYpzIUjJOyG8OJsPJ01lmCJYufyUqX4+VJfVXWe/KJ8I=
+  app: guarded-peak-16645
+  on:
+    repo: alexjc1107/meal-repo
