@@ -1,5 +1,53 @@
 'use strict';
 
+let MOCK_MEAL_DATA = {
+    "meals": [{
+            "id": "1111111",
+            "restaurant": "McDonalds",
+            "content": "Fries are good",
+            "username": "alex",
+            "created": 1470016976609
+        },
+        {
+            "id": "2222222",
+            "restaurant": "Chick-fil-a",
+            "content": "Spicy Chicken is good",
+            "username": "alex",
+            "created": 1470012976609
+        },
+        {
+            "id": "333333",
+            "restaurant": "Burger King",
+            "content": "Whopper is good",
+            "username": "testuser",
+            "created": 1470011976609
+        },
+        {
+            "id": "4444444",
+            "restaurant": "Popeye's",
+            "content": "Fried Chicken is good",
+            "username": "testuser",
+            "created": 1470009976609
+        }
+    ]
+};
+
+let MOCK_USER_DATA = {
+    "users": [{
+            "id": "11111111",
+            "username": "alex",
+            "password": "password",
+            "created": 1470016976609
+        },
+        {
+            "id": "22222222",
+            "username": "testuser",
+            "password": "password",
+            "created": 1470012976609
+        }
+    ]
+};
+
 function renderHomepage() {
     $('#js-main').html(`
     <h1>Meal Repo</h1>
