@@ -6,8 +6,8 @@ mongoose.Promise = global.Promise;
 const mealSchema = mongoose.Schema({
     restaurant: { type: String, required: true },
     content: { type: String },
-    created: { type: Date, default: Date.now },
     username: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    created: { type: Date, default: Date.now }
 });
 
 const userSchema = mongoose.Schema({
