@@ -1,9 +1,15 @@
 'use strict';
 
+let loginUsername = '';
+let restaurantName = '';
+let entryText = '';
+let dishName = '';
+
 let MOCK_MEAL_DATA = {
     "meals": [{
             "id": "1111111",
             "restaurant": "McDonalds",
+            "dish": "French Fries",
             "content": "Fries are good",
             "username": "alex",
             "created": 1470016976609
@@ -11,6 +17,7 @@ let MOCK_MEAL_DATA = {
         {
             "id": "2222222",
             "restaurant": "Chick-fil-a",
+            "dish": "Spicy Chicken",
             "content": "Spicy Chicken is good",
             "username": "alex",
             "created": 1470012976609
@@ -18,6 +25,7 @@ let MOCK_MEAL_DATA = {
         {
             "id": "333333",
             "restaurant": "Burger King",
+            "dish": "Whopper",
             "content": "Whopper is good",
             "username": "testuser",
             "created": 1470011976609
@@ -25,6 +33,7 @@ let MOCK_MEAL_DATA = {
         {
             "id": "4444444",
             "restaurant": "Popeyes",
+            "dish": "Fried Chicken",
             "content": "Fried Chicken is good",
             "username": "testuser",
             "created": 1470009976609
@@ -32,9 +41,18 @@ let MOCK_MEAL_DATA = {
         {
             "id": "5555555",
             "restaurant": "Popeyes",
+            "dish": "Fried Chicken",
             "content": "Fried Chicken is good",
             "username": "testuser",
             "created": 1470009976610
+        },
+        {
+            "id": "6666666",
+            "restaurant": "Popeyes",
+            "dish": "Fried Chicken",
+            "content": "Fried Chicken is good",
+            "username": "alex",
+            "created": 1470009976611
         }
     ]
 };
@@ -77,7 +95,7 @@ function handleLoginButton() {
     $('#loginForm').on('submit', (e) => {
         e.preventDefault();
         console.log('log in clicked');
-        const loginUsername = $('#loginUsername').val();
+        loginUsername = $('#loginUsername').val();
         console.log(loginUsername);
         const loginPassword = $('#loginPassword').val();
         console.log(loginPassword);
@@ -104,22 +122,27 @@ function renderUserPage() {
         <button type="button" id="logOutButton">Log Out</button>
         <button type="button" id="addNewEntryButton">Add New Entry</button>
         <p>Restaurants</p>
+        <ul id="restaurantList">
+        </ul>
     `);
     let restaurantList = [];
     let counter = 0;
     MOCK_MEAL_DATA.meals.forEach(meal => {
-        restaurantList[counter] = meal.restaurant;
-        counter++;
+        if (loginUsername == meal.username) {
+            restaurantList[counter] = meal.restaurant;
+            counter++;
+        };
     });
     restaurantList = restaurantList.filter((x, i, a) => a.indexOf(x) == i)
     restaurantList.forEach(uniqueRestaurant => {
-        $('#js-main').append(`
-            <a href="https://www.google.com">${uniqueRestaurant}</a><br>
+        $('#restaurantList').append(`
+            <li><a href=${uniqueRestaurant} id="${uniqueRestaurant}">${uniqueRestaurant}</a></li>
         `);
     });
     console.log(restaurantList);
     handleLogoutButton();
     handleAddNewEntryButton();
+    handleRestaurantClick();
 }
 
 function handleLogoutButton() {
@@ -142,7 +165,11 @@ function renderAddNewEntryPage() {
     console.log('renderAddNewEntryPage ran');
     $('#js-main').html(`
         <form id="addEntryForm">
+            <label for="restaurantName">Restaurant Name</label>
             <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName">
+            <label for="dishName">Dish Name</label>
+            <input type="text" name="dishName" placeholder="Dish Name" id="dishName">
+            <label for="entryText">Detail</label>
             <input type="text" name="entryText" placeholder="Detail your restaurant experience here" id="entryText">
             <button>Add Entry</button>
         </form>
@@ -155,10 +182,98 @@ function handleAddEntryButton() {
     $('#addEntryForm').on('submit', (e) => {
         e.preventDefault();
         console.log('add entry clicked');
-        const restaurantName = $('#restaurantName').val();
+        restaurantName = $('#restaurantName').val();
         console.log(restaurantName);
-        const entryText = $('#entryText').val();
+        dishName = $('#dishName').val();
+        console.log(dishName);
+        entryText = $('#entryText').val();
         console.log(entryText);
+        MOCK_MEAL_DATA.meals.push({
+            "id": "7777777",
+            "restaurant": $('#restaurantName').val(),
+            "dish": $('#dishName').val(),
+            "content": $('#entryText').val(),
+            "username": loginUsername,
+            "created": 1470009976612
+        });
+        renderUserPage();
+    });
+}
+
+function handleRestaurantClick() {
+    $('#restaurantList').on('click', (e) => {
+        e.preventDefault();
+        $('#js-main').html(`
+            <h1>Meals at ${e.target.id}</h1>
+            <section id="mealList">
+            </section>
+        `);
+        console.log(e.target.id);
+        MOCK_MEAL_DATA.meals.forEach(meal => {
+            if (meal.restaurant == e.target.id && meal.username == loginUsername) {
+                console.log(meal);
+                $('#mealList').append(`
+                    <div class="card">
+                        <a class="card-link" href="#" id="${meal.id}"></a>
+                        <h2>${meal.dish}</h2>
+                        <p>Review: ${meal.content}</p>
+                        <p>Date: ${meal.created}</p>
+                        <p>ID: ${meal.id}</p>
+                    </div>
+                `);
+            };
+        });
+        handleMealClick();
+    });
+}
+
+function handleMealClick() {
+    $('#mealList').on('click', (e) => {
+        e.preventDefault();
+        console.log('handleMealClick ran');
+        console.log(e.target.id);
+        console.log(MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).created);
+        $('#js-main').html(`
+            <h1>Editing Meal: ${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).dish}</h1>
+            <form id="editEntryForm">
+                <input type="text" name="restaurantName" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).restaurant}" id="restaurantName">
+                <input type="text" name="dishName" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).dish}" id="dishName">
+                <input type="text" name="entryText" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).content}" id="entryText">
+                <button>Submit</button>
+            </form>
+            <button type="button" id="deleteEntryButton">Delete Entry</button>
+        `);
+        let objIndex = MOCK_MEAL_DATA.meals.findIndex((entry => entry.id == e.target.id));
+        console.log(objIndex);
+        handleEditSubmitButton(objIndex);
+        handleDeleteEntryButton(objIndex);
+    });
+}
+
+function handleEditSubmitButton(objIndex) {
+    console.log('handleEditSubmitButton ran');
+    $('#editEntryForm').on('submit', (e) => {
+        e.preventDefault();
+        console.log('edit entry clicked');
+        restaurantName = $('#restaurantName').val();
+        console.log(restaurantName);
+        dishName = $('#dishName').val();
+        console.log(dishName);
+        entryText = $('#entryText').val();
+        console.log(entryText);
+        MOCK_MEAL_DATA.meals[objIndex].restaurant = $('#restaurantName').val();
+        MOCK_MEAL_DATA.meals[objIndex].dish = $('#dishName').val();
+        MOCK_MEAL_DATA.meals[objIndex].content = $('#entryText').val();
+        console.log(MOCK_MEAL_DATA.meals[objIndex]);
+        renderUserPage();
+    });
+}
+
+function handleDeleteEntryButton(objIndex) {
+    console.log('handleDeleteEntryButton ran');
+    $('#deleteEntryButton').on('click', (e) => {
+        let removed = MOCK_MEAL_DATA.meals.splice(objIndex, 1);
+        console.log(removed);
         renderUserPage();
     });
 }
