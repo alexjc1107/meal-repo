@@ -118,7 +118,8 @@ function handleSignUpButton() {
 function renderUserPage() {
     console.log('renderUserPage ran');
     $('#js-main').html(`
-        <p>username</p>
+        <p>Welcome ${loginUsername}</p>
+        <button type="button" id="homeButton">Home</button>
         <button type="button" id="logOutButton">Log Out</button>
         <button type="button" id="addNewEntryButton">Add New Entry</button>
         <p>Restaurants</p>
@@ -136,13 +137,14 @@ function renderUserPage() {
     restaurantList = restaurantList.filter((x, i, a) => a.indexOf(x) == i)
     restaurantList.forEach(uniqueRestaurant => {
         $('#restaurantList').append(`
-            <li><a href=${uniqueRestaurant} id="${uniqueRestaurant}">${uniqueRestaurant}</a></li>
+            <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
         `);
     });
     console.log(restaurantList);
     handleLogoutButton();
     handleAddNewEntryButton();
     handleRestaurantClick();
+    handleHomeButton();
 }
 
 function handleLogoutButton() {
@@ -164,6 +166,7 @@ function handleAddNewEntryButton() {
 function renderAddNewEntryPage() {
     console.log('renderAddNewEntryPage ran');
     $('#js-main').html(`
+        <button type="button" id="homeButton">Home</button>    
         <form id="addEntryForm">
             <label for="restaurantName">Restaurant Name</label>
             <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName">
@@ -175,6 +178,7 @@ function renderAddNewEntryPage() {
         </form>
     `);
     handleAddEntryButton();
+    handleHomeButton();
 }
 
 function handleAddEntryButton() {
@@ -201,9 +205,10 @@ function handleAddEntryButton() {
 }
 
 function handleRestaurantClick() {
-    $('#restaurantList').on('click', (e) => {
+    $('.restaurantLI').on('click', (e) => {
         e.preventDefault();
         $('#js-main').html(`
+            <button type="button" id="homeButton">Home</button>
             <h1>Meals at ${e.target.id}</h1>
             <section id="mealList">
             </section>
@@ -224,6 +229,7 @@ function handleRestaurantClick() {
             };
         });
         handleMealClick();
+        handleHomeButton();
     });
 }
 
@@ -234,6 +240,7 @@ function handleMealClick() {
         console.log(e.target.id);
         console.log(MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).created);
         $('#js-main').html(`
+            <button type="button" id="homeButton">Home</button>
             <h1>Editing Meal: ${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).dish}</h1>
             <form id="editEntryForm">
                 <input type="text" name="restaurantName" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).restaurant}" id="restaurantName">
@@ -247,6 +254,7 @@ function handleMealClick() {
         console.log(objIndex);
         handleEditSubmitButton(objIndex);
         handleDeleteEntryButton(objIndex);
+        handleHomeButton();
     });
 }
 
@@ -274,6 +282,13 @@ function handleDeleteEntryButton(objIndex) {
     $('#deleteEntryButton').on('click', (e) => {
         let removed = MOCK_MEAL_DATA.meals.splice(objIndex, 1);
         console.log(removed);
+        renderUserPage();
+    });
+}
+
+function handleHomeButton() {
+    console.log('handleHomeButton ran');
+    $('#homeButton').on('click', (e) => {
         renderUserPage();
     });
 }
