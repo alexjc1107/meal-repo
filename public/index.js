@@ -5,6 +5,7 @@ let restaurantName = '';
 let entryText = '';
 let dishName = '';
 
+/*
 let MOCK_MEAL_DATA = {
     "meals": [{
             "id": "1111111",
@@ -72,6 +73,8 @@ let MOCK_USER_DATA = {
         }
     ]
 };
+*/
+
 
 function renderHomepage() {
     $('#js-main').html(`
@@ -99,7 +102,8 @@ function handleLoginButton() {
         console.log(loginUsername);
         const loginPassword = $('#loginPassword').val();
         console.log(loginPassword);
-        renderUserPage();
+        //renderUserPage();
+        getRestaurants();
     });
 }
 
@@ -108,16 +112,42 @@ function handleSignUpButton() {
     $('#signUpForm').on('submit', (e) => {
         e.preventDefault();
         console.log('sign up clicked');
-        const signUpUsername = $('#signUpUsername').val();
-        console.log(signUpUsername);
+        loginUsername = $('#signUpUsername').val();
+        console.log(loginUsername);
         const signUpPassword = $('#signUpPassword').val();
         console.log(signUpPassword);
+        $.ajax({
+            url: '/user',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
+                'username': $('#signUpUsername').val(),
+                'password': $('#signUpPassword').val()
+            }),
+            success: getRestaurants,
+            error: (err) => {
+                console.log(err);
+            }
+        });
     });
 }
 
-function renderUserPage() {
+function getRestaurants() {
+    const query = {
+        url: '/meal',
+        type: 'GET',
+        success: renderUserPage,
+        error: err => console.log(err)
+    };
+    $.ajax(query);
+}
+
+function renderUserPage(restaurantsData) {
     console.log('renderUserPage ran');
-    $('#js-main').html(`
+    console.log(loginUsername);
+    console.log(restaurantsData);
+    /*$('#js-main').html(`
         <p>Welcome ${loginUsername}</p>
         <button type="button" id="homeButton">Home</button>
         <button type="button" id="logOutButton">Log Out</button>
@@ -140,10 +170,37 @@ function renderUserPage() {
             <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
         `);
     });
+    console.log(restaurantList);*/
+
+    $('#js-main').html(`
+        <p>Welcome ${loginUsername}</p>
+        <button type="button" id="homeButton">Home</button>
+        <button type="button" id="logOutButton">Log Out</button>
+        <button type="button" id="addNewEntryButton">Add New Entry</button>
+        <p>Restaurants</p>
+        <ul id="restaurantList">
+        </ul>
+    `);
+    let restaurantList = [];
+    let counter = 0;
+    restaurantsData.forEach(meal => {
+        if (loginUsername == meal.username) {
+            restaurantList[counter] = meal.restaurant;
+            counter++;
+        };
+    });
+    restaurantList = restaurantList.filter((x, i, a) => a.indexOf(x) == i)
+    restaurantList.forEach(uniqueRestaurant => {
+        $('#restaurantList').append(`
+        <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
+    `);
+    });
     console.log(restaurantList);
+
+
     handleLogoutButton();
     handleAddNewEntryButton();
-    handleRestaurantClick();
+    handleRestaurantClick(restaurantsData);
     handleHomeButton();
 }
 
@@ -192,19 +249,37 @@ function handleAddEntryButton() {
         console.log(dishName);
         entryText = $('#entryText').val();
         console.log(entryText);
-        MOCK_MEAL_DATA.meals.push({
+        /*MOCK_MEAL_DATA.meals.push({
             "id": "7777777",
             "restaurant": $('#restaurantName').val(),
             "dish": $('#dishName').val(),
             "content": $('#entryText').val(),
             "username": loginUsername,
             "created": 1470009976612
+        });*/
+
+        $.ajax({
+            url: '/meal',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
+                'restaurant': $('#restaurantName').val(),
+                'dish': $('#dishName').val(),
+                'content': $('#entryText').val(),
+                'username': loginUsername
+            }),
+            success: (send) => console.log(send),
+            error: (err) => {
+                console.log(err);
+            }
         });
-        renderUserPage();
+
+        getRestaurants();
     });
 }
 
-function handleRestaurantClick() {
+function handleRestaurantClick(restaurantsData) {
     $('.restaurantLI').on('click', (e) => {
         e.preventDefault();
         $('#js-main').html(`
@@ -214,7 +289,7 @@ function handleRestaurantClick() {
             </section>
         `);
         console.log(e.target.id);
-        MOCK_MEAL_DATA.meals.forEach(meal => {
+        restaurantsData.forEach(meal => {
             if (meal.restaurant == e.target.id && meal.username == loginUsername) {
                 console.log(meal);
                 $('#mealList').append(`
@@ -228,37 +303,37 @@ function handleRestaurantClick() {
                 `);
             };
         });
-        handleMealClick();
+        handleMealClick(restaurantsData);
         handleHomeButton();
     });
 }
 
-function handleMealClick() {
+function handleMealClick(restaurantsData) {
     $('#mealList').on('click', (e) => {
         e.preventDefault();
         console.log('handleMealClick ran');
         console.log(e.target.id);
-        console.log(MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).created);
+        console.log(restaurantsData.find(mealId => mealId.id == e.target.id).created);
         $('#js-main').html(`
             <button type="button" id="homeButton">Home</button>
-            <h1>Editing Meal: ${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).dish}</h1>
+            <h1>Editing Meal: ${restaurantsData.find(mealId => mealId.id == e.target.id).dish}</h1>
             <form id="editEntryForm">
-                <input type="text" name="restaurantName" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).restaurant}" id="restaurantName">
-                <input type="text" name="dishName" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).dish}" id="dishName">
-                <input type="text" name="entryText" value="${MOCK_MEAL_DATA.meals.find(mealId => mealId.id == e.target.id).content}" id="entryText">
+                <input type="text" name="restaurantName" value="${restaurantsData.find(mealId => mealId.id == e.target.id).restaurant}" id="restaurantName">
+                <input type="text" name="dishName" value="${restaurantsData.find(mealId => mealId.id == e.target.id).dish}" id="dishName">
+                <input type="text" name="entryText" value="${restaurantsData.find(mealId => mealId.id == e.target.id).content}" id="entryText">
                 <button>Submit</button>
             </form>
             <button type="button" id="deleteEntryButton">Delete Entry</button>
         `);
-        let objIndex = MOCK_MEAL_DATA.meals.findIndex((entry => entry.id == e.target.id));
+        let objIndex = restaurantsData.findIndex((entry => entry.id == e.target.id));
         console.log(objIndex);
-        handleEditSubmitButton(objIndex);
-        handleDeleteEntryButton(objIndex);
+        handleEditSubmitButton(e.target.id);
+        handleDeleteEntryButton(e.target.id);
         handleHomeButton();
     });
 }
 
-function handleEditSubmitButton(objIndex) {
+function handleEditSubmitButton(mealId) {
     console.log('handleEditSubmitButton ran');
     $('#editEntryForm').on('submit', (e) => {
         e.preventDefault();
@@ -269,27 +344,59 @@ function handleEditSubmitButton(objIndex) {
         console.log(dishName);
         entryText = $('#entryText').val();
         console.log(entryText);
-        MOCK_MEAL_DATA.meals[objIndex].restaurant = $('#restaurantName').val();
+        /*MOCK_MEAL_DATA.meals[objIndex].restaurant = $('#restaurantName').val();
         MOCK_MEAL_DATA.meals[objIndex].dish = $('#dishName').val();
         MOCK_MEAL_DATA.meals[objIndex].content = $('#entryText').val();
-        console.log(MOCK_MEAL_DATA.meals[objIndex]);
-        renderUserPage();
+        console.log(MOCK_MEAL_DATA.meals[objIndex]);*/
+
+
+        $.ajax({
+            url: '/meal',
+            type: 'PUT',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
+                'restaurant': $('#restaurantName').val(),
+                'dish': $('#dishName').val(),
+                'content': $('#entryText').val(),
+                'id': mealId
+            }),
+            success: (send) => console.log(send),
+            error: (err) => {
+                console.log(err);
+            }
+        });
+
+
+        getRestaurants();
     });
 }
 
-function handleDeleteEntryButton(objIndex) {
+function handleDeleteEntryButton(mealId) {
     console.log('handleDeleteEntryButton ran');
     $('#deleteEntryButton').on('click', (e) => {
-        let removed = MOCK_MEAL_DATA.meals.splice(objIndex, 1);
-        console.log(removed);
-        renderUserPage();
+        //let removed = MOCK_MEAL_DATA.meals.splice(objIndex, 1);
+        const query = {
+            url: '/meal',
+            type: 'DELETE',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
+                'id': mealId
+            }),
+            success: getRestaurants,
+            error: err => console.log(err)
+        };
+        $.ajax(query);
+        //console.log(removed);
+        //renderUserPage();
     });
 }
 
 function handleHomeButton() {
     console.log('handleHomeButton ran');
     $('#homeButton').on('click', (e) => {
-        renderUserPage();
+        getRestaurants();
     });
 }
 

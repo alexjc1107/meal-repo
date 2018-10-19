@@ -7,7 +7,6 @@ const mealSchema = mongoose.Schema({
     restaurant: { type: String, required: true },
     dish: { type: String },
     content: { type: String },
-    //username: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     username: { type: String },
     created: { type: Date, default: Date.now }
 });
@@ -22,11 +21,6 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true
     }
-});
-
-mealSchema.pre('find', function(next) {
-    this.populate('username');
-    next();
 });
 
 mealSchema.methods.serialize = function() {

@@ -3,60 +3,83 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const { PORT, DATABASE_URL } = require('./config');
 const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
 const app = express();
 const { User, Meal } = require('./models.js');
 
-//app.use(express.static('public'));
-//app.listen(process.env.PORT || 8080);
-
+app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
-//app.get("/", (req, res) => {
-//   res.sendFile(__dirname + "/public/");
-//});
 
-/*function runServer() {
-    const port = process.env.PORT || 8080;
-    return new Promise((resolve, reject) => {
-        server = app
-            .listen(port, () => {
-                console.log(`Your app is listening on port ${port}`);
-                resolve(server);
-            })
-            .on("error", err => {
-                reject(err);
-            });
-    });
-}*/
+
+app.get('/meal', (req, res) => {
+    console.log(req.body);
+    Meal
+        .find()
+        .then(meals => {
+            res.json(meals.map(meal => {
+                return {
+                    id: meal._id,
+                    restaurant: meal.restaurant,
+                    dish: meal.dish,
+                    content: meal.content,
+                    username: meal.username,
+                    created: meal.created
+                };
+            }));
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: 'get meals error' });
+        });
+});
 
 app.post('/user', (req, res) => {
-    const testUser = {
-        username: 'alex',
-        password: '1'
-    };
+    User
+        .create({
+            username: req.body.username,
+            password: req.body.password
+        })
+        .then(data => res.json(data))
+        .catch(error => res.json(error))
+});
 
-    const testRestaurant = {
-        restaurant: 'Five Guys',
-        dish: 'Burger',
-        content: 'create your own',
-        username: 'alex'
-    };
+app.post('/meal', (req, res) => {
+    console.log(req.body.restaurant);
+    Meal
+        .create({
+            restaurant: req.body.restaurant,
+            dish: req.body.dish,
+            content: req.body.content,
+            username: req.body.username
+        })
+        .then(data => res.json(data))
+        .catch(error => res.json(error))
+});
 
-    User.create(testUser)
-        .then(response => console.log(response))
-        .catch(error => console.log(error));
+app.put('/meal', (req, res) => {
+    console.log(req.body.restaurant);
+    Meal
+        .findByIdAndUpdate(req.body.id, {
+            restaurant: req.body.restaurant,
+            dish: req.body.dish,
+            content: req.body.content
+        }, { new: true })
+        .then(data => res.json(data))
+        .catch(error => res.json(error))
+});
 
-    Meal.create(testRestaurant)
-        .then(response => console.log(response))
-        .catch(error => console.log(error));
+app.delete('/meal', (req, res) => {
+    Meal
+        .findByIdAndRemove(req.body.id)
+        .then(data => res.json(data))
+        .catch(error => res.json(error))
 });
 
 // this function connects to our database, then starts the server
 function runServer(DATABASE_URL, port = PORT) {
     return new Promise((resolve, reject) => {
         mongoose.connect(
-            //DATABASE_URL, **removed variable and placed string
-            "mongodb://localhost:27017/meal-repo",
+            DATABASE_URL,
+            //"mongodb://localhost:27017/meal-repo",
             err => {
                 if (err) {
                     return reject(err);
@@ -95,8 +118,8 @@ function closeServer() {
 // if server.js is called directly (aka, with `node server.js`), this block
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
-    //runServer(DATABASE_URL).catch(err => console.error(err)); **removed variable and placed string
-    runServer("mongodb://localhost:27017/meal-repo").catch(err => console.error(err));
+    runServer(DATABASE_URL).catch(err => console.error(err)); // **removed variable and placed string
+    //runServer("mongodb://localhost:27017/meal-repo").catch(err => console.error(err));
 }
 
 module.exports = { app, runServer, closeServer };
