@@ -138,7 +138,7 @@ function getRestaurants() {
         url: '/meal',
         type: 'GET',
         success: renderUserPage,
-        error: err => console.log(err)
+        error: (err) => console.log(err)
     };
     $.ajax(query);
 }
@@ -183,14 +183,14 @@ function renderUserPage(restaurantsData) {
     `);
     let restaurantList = [];
     let counter = 0;
-    restaurantsData.forEach(meal => {
+    restaurantsData.forEach((meal) => {
         if (loginUsername == meal.username) {
             restaurantList[counter] = meal.restaurant;
             counter++;
         };
     });
     restaurantList = restaurantList.filter((x, i, a) => a.indexOf(x) == i)
-    restaurantList.forEach(uniqueRestaurant => {
+    restaurantList.forEach((uniqueRestaurant) => {
         $('#restaurantList').append(`
         <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
     `);
@@ -289,7 +289,7 @@ function handleRestaurantClick(restaurantsData) {
             </section>
         `);
         console.log(e.target.id);
-        restaurantsData.forEach(meal => {
+        restaurantsData.forEach((meal) => {
             if (meal.restaurant == e.target.id && meal.username == loginUsername) {
                 console.log(meal);
                 $('#mealList').append(`
@@ -313,19 +313,19 @@ function handleMealClick(restaurantsData) {
         e.preventDefault();
         console.log('handleMealClick ran');
         console.log(e.target.id);
-        console.log(restaurantsData.find(mealId => mealId.id == e.target.id).created);
+        console.log(restaurantsData.find((mealId) => mealId.id == e.target.id).created);
         $('#js-main').html(`
             <button type="button" id="homeButton">Home</button>
             <h1>Editing Meal: ${restaurantsData.find(mealId => mealId.id == e.target.id).dish}</h1>
             <form id="editEntryForm">
-                <input type="text" name="restaurantName" value="${restaurantsData.find(mealId => mealId.id == e.target.id).restaurant}" id="restaurantName">
-                <input type="text" name="dishName" value="${restaurantsData.find(mealId => mealId.id == e.target.id).dish}" id="dishName">
-                <input type="text" name="entryText" value="${restaurantsData.find(mealId => mealId.id == e.target.id).content}" id="entryText">
+                <input type="text" name="restaurantName" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).restaurant}" id="restaurantName">
+                <input type="text" name="dishName" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).dish}" id="dishName">
+                <input type="text" name="entryText" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).content}" id="entryText">
                 <button>Submit</button>
             </form>
             <button type="button" id="deleteEntryButton">Delete Entry</button>
         `);
-        let objIndex = restaurantsData.findIndex((entry => entry.id == e.target.id));
+        let objIndex = restaurantsData.findIndex((entry) => entry.id == e.target.id);
         console.log(objIndex);
         handleEditSubmitButton(e.target.id);
         handleDeleteEntryButton(e.target.id);
@@ -385,7 +385,7 @@ function handleDeleteEntryButton(mealId) {
                 'id': mealId
             }),
             success: getRestaurants,
-            error: err => console.log(err)
+            error: (err) => console.log(err)
         };
         $.ajax(query);
         //console.log(removed);
