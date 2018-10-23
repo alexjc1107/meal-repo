@@ -4,7 +4,7 @@
     "description": "A repository of personal restaurant and meal information to look back on and remember your experiences.",
     "main": "server.js",
     "scripts": {
-        "test": "mocha"
+        "test": "mocha --exit"
     },
     "author": "Alex Chong",
     "license": "ISC",
