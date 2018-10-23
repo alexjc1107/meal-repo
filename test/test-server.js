@@ -1,5 +1,6 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
+const { PORT, DATABASE_URL } = require('../config');
 
 const { app, runServer, closeServer } = require("../server");
 
@@ -20,7 +21,7 @@ describe("HTML Test", function() {
     // there's a possibility of a race condition where our tests start
     // running before our server has started.
     before(function() {
-        return runServer();
+        return runServer(DATABASE_URL, PORT);
     });
 
     // although we only have one test module at the moment, we'll
