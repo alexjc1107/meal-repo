@@ -5,10 +5,27 @@ const { PORT, DATABASE_URL } = require('./config');
 const bodyParser = require('body-parser');
 const app = express();
 const { User, Meal } = require('./models.js');
+const multer = require('multer')
+
+let storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './public/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+let upload = multer({ storage: storage });
+
+
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
+app.post('/upload', upload.single('photoUpload'), (req, res, next) => {
+    res.json('uploads/' + req.file.filename);
+
+});
 
 app.get('/meal', (req, res) => {
     console.log(req.body);

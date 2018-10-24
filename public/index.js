@@ -223,7 +223,13 @@ function handleAddNewEntryButton() {
 function renderAddNewEntryPage() {
     console.log('renderAddNewEntryPage ran');
     $('#js-main').html(`
-        <button type="button" id="homeButton">Home</button>    
+        <button type="button" id="homeButton">Home</button>
+            
+        <form action="/upload" id="uploadForm" method="post" enctype="multipart/form-data">
+                <input type="file" name="photoUpload" />
+                <input type="submit" id="photoUploadButton" value="Upload Photo"/>
+        </form>
+        <div id="imageDisplayArea"></div>
         <form id="addEntryForm">
             <label for="restaurantName">Restaurant Name</label>
             <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName">
@@ -231,11 +237,49 @@ function renderAddNewEntryPage() {
             <input type="text" name="dishName" placeholder="Dish Name" id="dishName">
             <label for="entryText">Detail</label>
             <input type="text" name="entryText" placeholder="Detail your restaurant experience here" id="entryText">
+            
             <button>Add Entry</button>
         </form>
     `);
     handleAddEntryButton();
     handleHomeButton();
+    handleUploadSubmitButton();
+}
+
+function handleUploadSubmitButton() {
+    console.log('handleUploadSubmitButton ran');
+    $('#uploadForm').on('click', '#photoUploadButton', (e) => {
+        console.log('upload prevented default behavior')
+        var fd = new FormData($("form").get(0));
+        e.preventDefault();
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            processData: false,
+            data: fd,
+            contentType: false,
+            /*mimeType: 'multipart/form-data',
+            contentType: "application/json",
+            dataType: "application/json; charset=utf-8",
+            contentType: JSON.stringify(false),
+            data: JSON.stringify({
+                'restaurant': $('#restaurantName').val(),
+                'dish': $('#dishName').val(),
+                'content': $('#entryText').val(),
+                'username': loginUsername
+            }),
+            */
+            success: (send) => {
+                console.log(send);
+                $('#imageDisplayArea').html(`
+                    <img src="${send}" />
+                `);
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
+    });
 }
 
 function handleAddEntryButton() {
