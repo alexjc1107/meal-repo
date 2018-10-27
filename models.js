@@ -9,6 +9,7 @@ const mealSchema = mongoose.Schema({
     dish: { type: String },
     content: { type: String },
     username: { type: String },
+    imageURL: { type: String },
     created: { type: Date, default: Date.now }
 });
 
@@ -39,6 +40,7 @@ mealSchema.methods.serialize = function() {
         dish: this.dish,
         content: this.content,
         username: this.username,
+        username: this.imageURL,
         created: this.created
     };
 }

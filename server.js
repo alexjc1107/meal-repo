@@ -65,6 +65,7 @@ app.get('/meal', jwtAuth, (req, res) => {
                     dish: meal.dish,
                     content: meal.content,
                     username: meal.username,
+                    imageURL: meal.imageURL,
                     created: meal.created
                 };
             }));
@@ -92,7 +93,8 @@ app.post('/meal', (req, res) => {
             restaurant: req.body.restaurant,
             dish: req.body.dish,
             content: req.body.content,
-            username: req.body.username
+            username: req.body.username,
+            imageURL: req.body.imageURL
         })
         .then(data => res.json(data))
         .catch(error => res.json(error))

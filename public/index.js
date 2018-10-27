@@ -4,6 +4,7 @@ let loginUsername = '';
 let restaurantName = '';
 let entryText = '';
 let dishName = '';
+let imageURL = '';
 
 function renderHomepage() {
     $('#js-main').html(`
@@ -206,6 +207,7 @@ function handleUploadSubmitButton() {
                 $('#imageDisplayArea').html(`
                     <img src="${send}" />
                 `);
+                imageURL = send;
             },
             error: (err) => {
                 console.log(err);
@@ -225,6 +227,7 @@ function handleAddEntryButton() {
         console.log(dishName);
         entryText = $('#entryText').val();
         console.log(entryText);
+        console.log(imageURL);
         $.ajax({
             url: '/meal',
             type: 'POST',
@@ -234,9 +237,13 @@ function handleAddEntryButton() {
                 'restaurant': $('#restaurantName').val(),
                 'dish': $('#dishName').val(),
                 'content': $('#entryText').val(),
-                'username': loginUsername
+                'username': loginUsername,
+                'imageURL': imageURL
             }),
-            success: (send) => console.log(send),
+            success: (send) => {
+                console.log(send);
+                imageURL = '';
+            },
             error: (err) => {
                 console.log(err);
             }
@@ -266,6 +273,7 @@ function handleRestaurantClick(restaurantsData) {
                         <p>Review: ${meal.content}</p>
                         <p>Date: ${meal.created}</p>
                         <p>ID: ${meal.id}</p>
+                        <img src="${meal.imageURL}" />
                     </div>
                 `);
             };
@@ -356,6 +364,7 @@ function handleDeleteEntryButton(mealId) {
 function handleHomeButton() {
     console.log('handleHomeButton ran');
     $('#homeButton').on('click', (e) => {
+        imageURL = '';
         getRestaurants();
     });
 }
