@@ -1,5 +1,6 @@
 "use strict";
 
+const bcrypt = require('bcryptjs');
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
@@ -8,6 +9,7 @@ const mealSchema = mongoose.Schema({
     dish: { type: String },
     content: { type: String },
     username: { type: String },
+    imageURL: { type: String },
     created: { type: Date, default: Date.now }
 });
 
@@ -23,6 +25,14 @@ const userSchema = mongoose.Schema({
     }
 });
 
+userSchema.methods.validatePassword = function(password) {
+    return bcrypt.compare(password, this.password);
+};
+
+userSchema.statics.hashPassword = function(password) {
+    return bcrypt.hash(password, 10);
+};
+
 mealSchema.methods.serialize = function() {
     return {
         id: this._id,
@@ -30,6 +40,7 @@ mealSchema.methods.serialize = function() {
         dish: this.dish,
         content: this.content,
         username: this.username,
+        username: this.imageURL,
         created: this.created
     };
 }

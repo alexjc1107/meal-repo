@@ -5,12 +5,55 @@ const { PORT, DATABASE_URL } = require('./config');
 const bodyParser = require('body-parser');
 const app = express();
 const { User, Meal } = require('./models.js');
+const multer = require('multer')
+const passport = require('passport');
+require('dotenv').config();
+const morgan = require('morgan');
+
+const { router: usersRouter } = require('./userRouter.js');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+
+// CORS
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+    if (req.method === 'OPTIONS') {
+        return res.send(204);
+    }
+    next();
+});
+
+app.use(morgan('common'));
+
+let storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './public/uploads');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+let upload = multer({ storage: storage });
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
+app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
+//app.use('mealRouter')
+
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 
+app.post('/upload', upload.single('photoUpload'), (req, res, next) => {
+    res.json('uploads/' + req.file.filename);
 
-app.get('/meal', (req, res) => {
+});
+
+app.get('/meal', jwtAuth, (req, res) => {
     console.log(req.body);
     Meal
         .find()
@@ -22,6 +65,7 @@ app.get('/meal', (req, res) => {
                     dish: meal.dish,
                     content: meal.content,
                     username: meal.username,
+                    imageURL: meal.imageURL,
                     created: meal.created
                 };
             }));
@@ -32,16 +76,6 @@ app.get('/meal', (req, res) => {
         });
 });
 
-app.post('/user', (req, res) => {
-    User
-        .create({
-            username: req.body.username,
-            password: req.body.password
-        })
-        .then(data => res.json(data))
-        .catch(error => res.json(error))
-});
-
 app.post('/meal', (req, res) => {
     console.log(req.body.restaurant);
     Meal
@@ -49,7 +83,8 @@ app.post('/meal', (req, res) => {
             restaurant: req.body.restaurant,
             dish: req.body.dish,
             content: req.body.content,
-            username: req.body.username
+            username: req.body.username,
+            imageURL: req.body.imageURL
         })
         .then(data => res.json(data))
         .catch(error => res.json(error))
@@ -79,7 +114,6 @@ function runServer(DATABASE_URL, port = PORT) {
     return new Promise((resolve, reject) => {
         mongoose.connect(
             DATABASE_URL,
-            //"mongodb://localhost:27017/meal-repo",
             err => {
                 if (err) {
                     return reject(err);
@@ -98,46 +132,23 @@ function runServer(DATABASE_URL, port = PORT) {
     });
 }
 
-// like `runServer`, this function also needs to return a promise.
-// `server.close` does not return a promise on its own, so we manually
-// create one.
 function closeServer() {
     return new Promise((resolve, reject) => {
         console.log("Closing server");
         server.close(err => {
             if (err) {
                 reject(err);
-                // so we don't also call `resolve()`
                 return;
             }
             resolve();
         });
     });
 }
-
-/*
-
-
-function closeServer() {
-    return new Promise((resolve, reject) => {
-        console.log("Closing server");
-        server.close(err => {
-            if (err) {
-                reject(err);
-                // so we don't also call `resolve()`
-                return;
-            }
-            resolve();
-        });
-    });
-}
-*/
 
 // if server.js is called directly (aka, with `node server.js`), this block
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
-    runServer(DATABASE_URL).catch(err => console.error(err)); // **removed variable and placed string
-    //runServer("mongodb://localhost:27017/meal-repo").catch(err => console.error(err));
+    runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
 module.exports = { app, runServer, closeServer };
