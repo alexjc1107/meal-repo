@@ -76,16 +76,6 @@ app.get('/meal', jwtAuth, (req, res) => {
         });
 });
 
-app.post('/user', (req, res) => {
-    User
-        .create({
-            username: req.body.username,
-            password: req.body.password
-        })
-        .then(data => res.json(data))
-        .catch(error => res.json(error))
-});
-
 app.post('/meal', (req, res) => {
     console.log(req.body.restaurant);
     Meal
