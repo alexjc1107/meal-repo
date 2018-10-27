@@ -128,8 +128,6 @@ function renderUserPage(restaurantsData) {
     `);
     });
     console.log(restaurantList);
-
-
     handleLogoutButton();
     handleAddNewEntryButton();
     handleRestaurantClick(restaurantsData);
@@ -191,17 +189,6 @@ function handleUploadSubmitButton() {
             processData: false,
             data: fd,
             contentType: false,
-            /*mimeType: 'multipart/form-data',
-            contentType: "application/json",
-            dataType: "application/json; charset=utf-8",
-            contentType: JSON.stringify(false),
-            data: JSON.stringify({
-                'restaurant': $('#restaurantName').val(),
-                'dish': $('#dishName').val(),
-                'content': $('#entryText').val(),
-                'username': loginUsername
-            }),
-            */
             success: (send) => {
                 console.log(send);
                 $('#imageDisplayArea').html(`
@@ -336,8 +323,6 @@ function handleEditSubmitButton(mealId) {
                 console.log(err);
             }
         });
-
-
         getRestaurants();
     });
 }
