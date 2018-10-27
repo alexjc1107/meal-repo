@@ -347,11 +347,11 @@ function handleDeleteEntryButton(mealId) {
             data: JSON.stringify({
                 'id': mealId
             }),
-            success: getRestaurants(),
+            success: (res) => console.log(res),
             error: (err) => console.log(err)
         };
         $.ajax(query);
-
+        getRestaurants();
     });
 }
 
