@@ -218,6 +218,9 @@ function handleAddEntryButton() {
         $.ajax({
             url: '/meal',
             type: 'POST',
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem('jwt')
+            },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify({
@@ -310,6 +313,9 @@ function handleEditSubmitButton(mealId) {
         $.ajax({
             url: '/meal',
             type: 'PUT',
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem('jwt')
+            },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify({
@@ -333,6 +339,9 @@ function handleDeleteEntryButton(mealId) {
         const query = {
             url: '/meal',
             type: 'DELETE',
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem('jwt')
+            },
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify({
