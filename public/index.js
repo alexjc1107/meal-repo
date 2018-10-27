@@ -5,77 +5,6 @@ let restaurantName = '';
 let entryText = '';
 let dishName = '';
 
-/*
-let MOCK_MEAL_DATA = {
-    "meals": [{
-            "id": "1111111",
-            "restaurant": "McDonalds",
-            "dish": "French Fries",
-            "content": "Fries are good",
-            "username": "alex",
-            "created": 1470016976609
-        },
-        {
-            "id": "2222222",
-            "restaurant": "Chick-fil-a",
-            "dish": "Spicy Chicken",
-            "content": "Spicy Chicken is good",
-            "username": "alex",
-            "created": 1470012976609
-        },
-        {
-            "id": "333333",
-            "restaurant": "Burger King",
-            "dish": "Whopper",
-            "content": "Whopper is good",
-            "username": "testuser",
-            "created": 1470011976609
-        },
-        {
-            "id": "4444444",
-            "restaurant": "Popeyes",
-            "dish": "Fried Chicken",
-            "content": "Fried Chicken is good",
-            "username": "testuser",
-            "created": 1470009976609
-        },
-        {
-            "id": "5555555",
-            "restaurant": "Popeyes",
-            "dish": "Fried Chicken",
-            "content": "Fried Chicken is good",
-            "username": "testuser",
-            "created": 1470009976610
-        },
-        {
-            "id": "6666666",
-            "restaurant": "Popeyes",
-            "dish": "Fried Chicken",
-            "content": "Fried Chicken is good",
-            "username": "alex",
-            "created": 1470009976611
-        }
-    ]
-};
-
-let MOCK_USER_DATA = {
-    "users": [{
-            "id": "11111111",
-            "username": "alex",
-            "password": "password",
-            "created": 1470016976609
-        },
-        {
-            "id": "22222222",
-            "username": "testuser",
-            "password": "password",
-            "created": 1470012976609
-        }
-    ]
-};
-*/
-
-
 function renderHomepage() {
     $('#js-main').html(`
         <h1>Meal Repo</h1>
@@ -102,8 +31,27 @@ function handleLoginButton() {
         console.log(loginUsername);
         const loginPassword = $('#loginPassword').val();
         console.log(loginPassword);
-        //renderUserPage();
-        getRestaurants();
+        $.ajax({
+            url: '/api/auth/login/',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({
+                "username": $('#loginUsername').val(),
+                "password": $('#loginPassword').val()
+            }),
+            success: (next) => {
+                console.log('authenticated');
+                console.log(next);
+                localStorage.setItem('jwt', next.authToken);
+                console.log(localStorage.getItem('jwt'));
+                getRestaurants();
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
+
     });
 }
 
@@ -117,7 +65,7 @@ function handleSignUpButton() {
         const signUpPassword = $('#signUpPassword').val();
         console.log(signUpPassword);
         $.ajax({
-            url: '/user',
+            url: '/api/users/',
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -125,7 +73,7 @@ function handleSignUpButton() {
                 'username': $('#signUpUsername').val(),
                 'password': $('#signUpPassword').val()
             }),
-            success: getRestaurants,
+            success: console.log('user created'),
             error: (err) => {
                 console.log(err);
             }
@@ -134,43 +82,26 @@ function handleSignUpButton() {
 }
 
 function getRestaurants() {
-    const query = {
+    $.ajax({
         url: '/meal',
         type: 'GET',
-        success: renderUserPage,
-        error: (err) => console.log(err)
-    };
-    $.ajax(query);
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem('jwt')
+        },
+        success: (next) => {
+            console.log(next);
+            renderUserPage(next);
+        },
+        error: (err) => {
+            console.log(err);
+        }
+    });
 }
 
 function renderUserPage(restaurantsData) {
     console.log('renderUserPage ran');
     console.log(loginUsername);
     console.log(restaurantsData);
-    /*$('#js-main').html(`
-        <p>Welcome ${loginUsername}</p>
-        <button type="button" id="homeButton">Home</button>
-        <button type="button" id="logOutButton">Log Out</button>
-        <button type="button" id="addNewEntryButton">Add New Entry</button>
-        <p>Restaurants</p>
-        <ul id="restaurantList">
-        </ul>
-    `);
-    let restaurantList = [];
-    let counter = 0;
-    MOCK_MEAL_DATA.meals.forEach(meal => {
-        if (loginUsername == meal.username) {
-            restaurantList[counter] = meal.restaurant;
-            counter++;
-        };
-    });
-    restaurantList = restaurantList.filter((x, i, a) => a.indexOf(x) == i)
-    restaurantList.forEach(uniqueRestaurant => {
-        $('#restaurantList').append(`
-            <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
-        `);
-    });
-    console.log(restaurantList);*/
 
     $('#js-main').html(`
         <p>Welcome ${loginUsername}</p>
@@ -208,6 +139,7 @@ function handleLogoutButton() {
     console.log('handleLogoutButton ran');
     $('#logOutButton').on('click', (e) => {
         console.log('log out clicked');
+        localStorage.setItem('jwt', '');
         handleHome();
     });
 }
@@ -293,15 +225,6 @@ function handleAddEntryButton() {
         console.log(dishName);
         entryText = $('#entryText').val();
         console.log(entryText);
-        /*MOCK_MEAL_DATA.meals.push({
-            "id": "7777777",
-            "restaurant": $('#restaurantName').val(),
-            "dish": $('#dishName').val(),
-            "content": $('#entryText').val(),
-            "username": loginUsername,
-            "created": 1470009976612
-        });*/
-
         $.ajax({
             url: '/meal',
             type: 'POST',
@@ -388,11 +311,6 @@ function handleEditSubmitButton(mealId) {
         console.log(dishName);
         entryText = $('#entryText').val();
         console.log(entryText);
-        /*MOCK_MEAL_DATA.meals[objIndex].restaurant = $('#restaurantName').val();
-        MOCK_MEAL_DATA.meals[objIndex].dish = $('#dishName').val();
-        MOCK_MEAL_DATA.meals[objIndex].content = $('#entryText').val();
-        console.log(MOCK_MEAL_DATA.meals[objIndex]);*/
-
 
         $.ajax({
             url: '/meal',
@@ -419,7 +337,6 @@ function handleEditSubmitButton(mealId) {
 function handleDeleteEntryButton(mealId) {
     console.log('handleDeleteEntryButton ran');
     $('#deleteEntryButton').on('click', (e) => {
-        //let removed = MOCK_MEAL_DATA.meals.splice(objIndex, 1);
         const query = {
             url: '/meal',
             type: 'DELETE',
@@ -428,12 +345,11 @@ function handleDeleteEntryButton(mealId) {
             data: JSON.stringify({
                 'id': mealId
             }),
-            success: getRestaurants,
+            success: getRestaurants(),
             error: (err) => console.log(err)
         };
         $.ajax(query);
-        //console.log(removed);
-        //renderUserPage();
+
     });
 }
 

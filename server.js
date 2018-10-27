@@ -6,6 +6,25 @@ const bodyParser = require('body-parser');
 const app = express();
 const { User, Meal } = require('./models.js');
 const multer = require('multer')
+const passport = require('passport');
+require('dotenv').config();
+const morgan = require('morgan');
+
+const { router: usersRouter } = require('./userRouter.js');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+
+// CORS
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+    if (req.method === 'OPTIONS') {
+        return res.send(204);
+    }
+    next();
+});
+
+app.use(morgan('common'));
 
 let storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -17,7 +36,14 @@ let storage = multer.diskStorage({
 });
 let upload = multer({ storage: storage });
 
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
+app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
+//app.use('mealRouter')
+
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
@@ -27,7 +53,7 @@ app.post('/upload', upload.single('photoUpload'), (req, res, next) => {
 
 });
 
-app.get('/meal', (req, res) => {
+app.get('/meal', jwtAuth, (req, res) => {
     console.log(req.body);
     Meal
         .find()
