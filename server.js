@@ -114,7 +114,6 @@ function runServer(DATABASE_URL, port = PORT) {
     return new Promise((resolve, reject) => {
         mongoose.connect(
             DATABASE_URL,
-            //"mongodb://localhost:27017/meal-repo",
             err => {
                 if (err) {
                     return reject(err);
@@ -133,46 +132,23 @@ function runServer(DATABASE_URL, port = PORT) {
     });
 }
 
-// like `runServer`, this function also needs to return a promise.
-// `server.close` does not return a promise on its own, so we manually
-// create one.
 function closeServer() {
     return new Promise((resolve, reject) => {
         console.log("Closing server");
         server.close(err => {
             if (err) {
                 reject(err);
-                // so we don't also call `resolve()`
                 return;
             }
             resolve();
         });
     });
 }
-
-/*
-
-
-function closeServer() {
-    return new Promise((resolve, reject) => {
-        console.log("Closing server");
-        server.close(err => {
-            if (err) {
-                reject(err);
-                // so we don't also call `resolve()`
-                return;
-            }
-            resolve();
-        });
-    });
-}
-*/
 
 // if server.js is called directly (aka, with `node server.js`), this block
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
-    runServer(DATABASE_URL).catch(err => console.error(err)); // **removed variable and placed string
-    //runServer("mongodb://localhost:27017/meal-repo").catch(err => console.error(err));
+    runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
 module.exports = { app, runServer, closeServer };
