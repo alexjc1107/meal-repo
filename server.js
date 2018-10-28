@@ -35,7 +35,6 @@ let upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('photoUpload'), (req, res, next) => {
     res.json('uploads/' + req.file.filename);
-
 });
 
 // connects to database, then starts the server
