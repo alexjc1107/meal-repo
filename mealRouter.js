@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     Meal
         .find()
         .then(meals => {
-            res.json(meals.map(meal => {
+            res.status(200).json(meals.map(meal => {
                 return {
                     id: meal._id,
                     restaurant: meal.restaurant,
@@ -42,8 +42,11 @@ router.post('/', (req, res) => {
             username: req.body.username,
             imageURL: req.body.imageURL
         })
-        .then(data => res.json(data))
-        .catch(error => res.json(error))
+        .then(data => res.status(200).json(data))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: 'post meals error' });
+        });
 });
 
 router.put('/', (req, res) => {
@@ -54,15 +57,21 @@ router.put('/', (req, res) => {
             dish: req.body.dish,
             content: req.body.content
         }, { new: true })
-        .then(data => res.json(data))
-        .catch(error => res.json(error))
+        .then(data => res.status(200).json(data))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: 'put meals error' });
+        });
 });
 
 router.delete('/', (req, res) => {
     Meal
         .findByIdAndRemove(req.body.id)
-        .then(data => res.json(data))
-        .catch(error => res.json(error))
+        .then(data => res.status(200).json(data))
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: 'delete meals error' });
+        });
 });
 
 module.exports = { router };

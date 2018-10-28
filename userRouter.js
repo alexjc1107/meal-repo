@@ -1,11 +1,8 @@
 'use strict';
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const { User } = require('./models.js');
-
 const router = express.Router();
-
 const jsonParser = bodyParser.json();
 
 // Post to register a new user
@@ -41,8 +38,6 @@ router.post('/', jsonParser, (req, res) => {
     // "foobar ", including the space at the end).  We need to reject such values
     // explicitly so the users know what's happening, rather than silently
     // trimming them and expecting the user to understand.
-    // We'll silently trim the other fields, because they aren't credentials used
-    // to log in, so it's less of a problem.
     const explicityTrimmedFields = ['username', 'password'];
     const nonTrimmedField = explicityTrimmedFields.find(
         field => req.body[field].trim() !== req.body[field]
@@ -63,8 +58,7 @@ router.post('/', jsonParser, (req, res) => {
         },
         password: {
             min: 10,
-            // bcrypt truncates after 72 characters, so let's not give the illusion
-            // of security by storing extra (unused) info
+            // bcrypt truncates after 72 characters
             max: 72
         }
     };
@@ -84,8 +78,8 @@ router.post('/', jsonParser, (req, res) => {
             code: 422,
             reason: 'ValidationError',
             message: tooSmallField ?
-                `Must be at least ${sizedFields[tooSmallField]
-          .min} characters long` : `Must be at most ${sizedFields[tooLargeField]
+                `must be at least ${sizedFields[tooSmallField]
+          .min} characters long` : `must be at most ${sizedFields[tooLargeField]
           .max} characters long`,
             location: tooSmallField || tooLargeField
         });
@@ -101,7 +95,7 @@ router.post('/', jsonParser, (req, res) => {
                 return Promise.reject({
                     code: 422,
                     reason: 'ValidationError',
-                    message: 'Username already taken',
+                    message: 'already exists',
                     location: 'username'
                 });
             }

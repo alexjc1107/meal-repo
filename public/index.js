@@ -8,17 +8,21 @@ let imageURL = '';
 
 function renderHomepage() {
     $('#js-main').html(`
-        <h1>Meal Repo</h1>
-        <form id="loginForm">
-            <input type="text" name="loginUsername" placeholder="Username" id="loginUsername", autocomplete="username">
-            <input type="password" name="loginPassword" placeholder="Password" id="loginPassword" autocomplete="current-password">
-            <button>Log In</button>
+        <h1 class="center">Meal Repo</h1>
+        <form id="loginForm" class="loginForm">
+            <label for="loginUsername" class="hideLabel">Username</label>
+            <input type="text" name="loginUsername" placeholder="Username" id="loginUsername", autocomplete="username" class="loginTextBox">
+            <label for="loginPassword" class="hideLabel">Password</label>
+            <input type="password" name="loginPassword" placeholder="Password" id="loginPassword" autocomplete="current-password" class="loginTextBox">
+            <button class="homepageButton">Log In</button>
         </form>
-        <h2>Sign up now, it's free!</h2>
+        <h2>Don't have an account? Sign up now, it's free!</h2>
         <form id="signUpForm">
-            <input type="text" name="signUpUsername" placeholder="Username" id="signUpUsername", autocomplete="username">
-            <input type="password" name="signUpPassword" placeholder="Password" id="signUpPassword" autocomplete="current-password">
-            <button>Sign Up</button>
+            <label for="signUpUsername" class="hideLabel">Username</label>
+            <input type="text" name="signUpUsername" placeholder="Username" id="signUpUsername", autocomplete="username" class="loginTextBox">
+            <label for="signUpPassword" class="hideLabel">Password</label>
+            <input type="password" name="signUpPassword" placeholder="Password" id="signUpPassword" autocomplete="current-password" class="loginTextBox">
+            <button class="homepageButton">Sign Up</button>
         </form>
     `);
 }
@@ -50,9 +54,10 @@ function handleLoginButton() {
             },
             error: (err) => {
                 console.log(err);
+                $("#loginForm").trigger('reset');
+                alert(`username or password is incorrect`);
             }
         });
-
     });
 }
 
@@ -74,9 +79,16 @@ function handleSignUpButton() {
                 'username': $('#signUpUsername').val(),
                 'password': $('#signUpPassword').val()
             }),
-            success: console.log('user created'),
+            success: (next) => {
+                console.log('user created');
+                $("#signUpForm").trigger('reset');
+                alert(`Username registered successfully. Login to continue.`);
+            },
             error: (err) => {
                 console.log(err);
+                console.log("usersignupfailed");
+                $("#signUpForm").trigger('reset');
+                alert(`${err.responseJSON.location} ${err.responseJSON.message}`);
             }
         });
     });
@@ -105,11 +117,13 @@ function renderUserPage(restaurantsData) {
     console.log(restaurantsData);
 
     $('#js-main').html(`
-        <p>Welcome ${loginUsername}</p>
-        <button type="button" id="homeButton">Home</button>
-        <button type="button" id="logOutButton">Log Out</button>
-        <button type="button" id="addNewEntryButton">Add New Entry</button>
-        <p>Restaurants</p>
+        <p class="welcome">Welcome ${loginUsername}</p>
+        <div class="navigation">
+            <button type="button" id="homeButton">Home</button>
+            <button type="button" id="logOutButton" class="logOutButton">Log Out</button>
+        </div>
+        <h1>Restaurants</h1>
+        <button type="button" id="addNewEntryButton" class="center newEntryButton">New Entry</button>
         <ul id="restaurantList">
         </ul>
     `);
@@ -154,21 +168,22 @@ function handleAddNewEntryButton() {
 function renderAddNewEntryPage() {
     console.log('renderAddNewEntryPage ran');
     $('#js-main').html(`
-        <button type="button" id="homeButton">Home</button>
-            
+        <button type="button" id="homeButton" class="navigation">Home</button>
+        <h1>Add New Entry</h1>
         <form action="/upload" id="uploadForm" method="post" enctype="multipart/form-data">
-                <input type="file" name="photoUpload" />
-                <input type="submit" id="photoUploadButton" value="Upload Photo"/>
+            <label for="photoUpload">1.</label>        
+            <input type="file" name="photoUpload"  id="photoUpload" class="editMeal">
+            <label for="photoUploadButton">2.</label>      
+            <input type="submit" id="photoUploadButton" name="photoUploadButton" value="Upload Photo" class="editMeal">
         </form>
         <div id="imageDisplayArea"></div>
         <form id="addEntryForm">
-            <label for="restaurantName">Restaurant Name</label>
-            <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName">
-            <label for="dishName">Dish Name</label>
-            <input type="text" name="dishName" placeholder="Dish Name" id="dishName">
-            <label for="entryText">Detail</label>
-            <input type="text" name="entryText" placeholder="Detail your restaurant experience here" id="entryText">
-            
+            <label for="restaurantName">3. Restaurant Name</label>
+            <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName" class="editMeal">
+            <label for="dishName">4. Dish Name</label>
+            <input type="text" name="dishName" placeholder="Dish Name" id="dishName" class="editMeal">
+            <label for="entryText">5. Review</label>
+            <textarea name="entryText" cols="40" rows="5" id="entryText" placeholder="Detail your restaurant experience here" class="editMeal"></textarea>
             <button>Add Entry</button>
         </form>
     `);
@@ -192,7 +207,7 @@ function handleUploadSubmitButton() {
             success: (send) => {
                 console.log(send);
                 $('#imageDisplayArea').html(`
-                    <img src="${send}" />
+                    <img src="${send}" alt="User uploaded image" />
                 `);
                 imageURL = send;
             },
@@ -247,23 +262,24 @@ function handleRestaurantClick(restaurantsData) {
     $('.restaurantLI').on('click', (e) => {
         e.preventDefault();
         $('#js-main').html(`
-            <button type="button" id="homeButton">Home</button>
+            <button type="button" id="homeButton" class="navigation">Home</button>
             <h1>Meals at ${e.target.id}</h1>
-            <section id="mealList">
+            <section id="mealList" class="mealList">
             </section>
         `);
         console.log(e.target.id);
         restaurantsData.forEach((meal) => {
             if (meal.restaurant == e.target.id && meal.username == loginUsername) {
                 console.log(meal);
+                let convertDate = new Date(meal.created);
+                console.log(convertDate);
+                console.log(convertDate.toDateString());
                 $('#mealList').append(`
-                    <div class="card">
-                        <a class="card-link" href="#" id="${meal.id}"></a>
-                        <h2>${meal.dish}</h2>
+                    <div class="card center">
+                        <a class="card-link" href="#" id="${meal.id}">${meal.dish}</a>
+                        <img class="imgOffset" src="${meal.imageURL}" alt="${meal.dish}"/>
+                        <p>Date: ${convertDate.toDateString().substr(4,12)}</p>
                         <p>Review: ${meal.content}</p>
-                        <p>Date: ${meal.created}</p>
-                        <p>ID: ${meal.id}</p>
-                        <img src="${meal.imageURL}" />
                     </div>
                 `);
             };
@@ -280,16 +296,21 @@ function handleMealClick(restaurantsData) {
         console.log(e.target.id);
         console.log(restaurantsData.find((mealId) => mealId.id == e.target.id).created);
         $('#js-main').html(`
-            <button type="button" id="homeButton">Home</button>
+            <button type="button" id="homeButton" class="navigation">Home</button>
             <h1>Editing Meal: ${restaurantsData.find(mealId => mealId.id == e.target.id).dish}</h1>
+            <button type="button" id="deleteEntryButton" class="deleteEntryButton">Delete Entry</button>
             <form id="editEntryForm">
-                <input type="text" name="restaurantName" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).restaurant}" id="restaurantName">
-                <input type="text" name="dishName" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).dish}" id="dishName">
-                <input type="text" name="entryText" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).content}" id="entryText">
-                <button>Submit</button>
+                <label for="restaurantName">Restaurant Name</label>    
+                <input type="text" name="restaurantName" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).restaurant}" id="restaurantName" class="editMeal">
+                <label for="dishName">Dish Name</label>
+                <input type="text" name="dishName" value="${restaurantsData.find((mealId) => mealId.id == e.target.id).dish}" id="dishName" class="editMeal">
+                <label for="entryText">Review</label>
+                <textarea name="entryText" cols="40" rows="5" id="entryText" class="editMeal">${restaurantsData.find((mealId) => mealId.id == e.target.id).content}</textarea>
+                <button class="editMeal">Submit Edits</button>
             </form>
-            <button type="button" id="deleteEntryButton">Delete Entry</button>
+            
         `);
+        $('entryText').value = restaurantsData.find((mealId) => mealId.id == e.target.id).content;
         let objIndex = restaurantsData.findIndex((entry) => entry.id == e.target.id);
         console.log(objIndex);
         handleEditSubmitButton(e.target.id);
@@ -336,7 +357,7 @@ function handleEditSubmitButton(mealId) {
 function handleDeleteEntryButton(mealId) {
     console.log('handleDeleteEntryButton ran');
     $('#deleteEntryButton').on('click', (e) => {
-        const query = {
+        $.ajax({
             url: '/meal',
             type: 'DELETE',
             headers: {
@@ -349,8 +370,7 @@ function handleDeleteEntryButton(mealId) {
             }),
             success: (res) => console.log(res),
             error: (err) => console.log(err)
-        };
-        $.ajax(query);
+        });
         getRestaurants();
     });
 }
