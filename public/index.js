@@ -171,10 +171,10 @@ function renderAddNewEntryPage() {
         <button type="button" id="homeButton" class="navigation">Home</button>
         <h1>Add New Entry</h1>
         <form action="/upload" id="uploadForm" method="post" enctype="multipart/form-data">
-            <label for="photoUpload">1.</label>        
-            <input type="file" name="photoUpload"  id="photoUpload" class="editMeal">
+            <label for="photoUpload">1.</label>
+            <input type="file" name="photoUpload" id="photoUpload" accept="image/*" class="editMeal">
             <label for="photoUploadButton">2.</label>      
-            <input type="submit" id="photoUploadButton" name="photoUploadButton" value="Upload Photo" class="editMeal">
+            <button type="submit" id="photoUploadButton" name="photoUploadButton" class="editMeal">Upload Photo</button>
         </form>
         <div id="imageDisplayArea"></div>
         <form id="addEntryForm">
