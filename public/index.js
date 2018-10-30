@@ -10,17 +10,17 @@ function renderHomepage() {
     $('#js-main').html(`
         <h1 class="center">Meal Repo</h1>
         <form id="loginForm" class="loginForm">
-            <label for="loginUsername" class="hideLabel">Username</label>
+            <label for="loginUsername" class="formLabel">Username</label>
             <input type="text" name="loginUsername" placeholder="Username" id="loginUsername", autocomplete="username" class="loginTextBox">
-            <label for="loginPassword" class="hideLabel">Password</label>
+            <label for="loginPassword" class="formLabel">Password</label>
             <input type="password" name="loginPassword" placeholder="Password" id="loginPassword" autocomplete="current-password" class="loginTextBox">
             <button class="homepageButton">Log In</button>
         </form>
         <h2>Don't have an account? Sign up now, it's free!</h2>
         <form id="signUpForm">
-            <label for="signUpUsername" class="hideLabel">Username</label>
+            <label for="signUpUsername" class="formLabel">Username</label>
             <input type="text" name="signUpUsername" placeholder="Username" id="signUpUsername", autocomplete="username" class="loginTextBox">
-            <label for="signUpPassword" class="hideLabel">Password</label>
+            <label for="signUpPassword" class="formLabel">Password</label>
             <input type="password" name="signUpPassword" placeholder="Password" id="signUpPassword" autocomplete="current-password" class="loginTextBox">
             <button class="homepageButton">Sign Up</button>
         </form>
@@ -123,6 +123,7 @@ function renderUserPage(restaurantsData) {
             <button type="button" id="logOutButton" class="logOutButton">Log Out</button>
         </div>
         <h1>Restaurants</h1>
+        <p>Choose a restaurant to view the dishes you've saved or select New Entry below</p>
         <button type="button" id="addNewEntryButton" class="center newEntryButton">New Entry</button>
         <ul id="restaurantList">
         </ul>
@@ -136,6 +137,7 @@ function renderUserPage(restaurantsData) {
         };
     });
     restaurantList = restaurantList.filter((x, i, a) => a.indexOf(x) == i)
+    restaurantList.sort((a, b) => a.localeCompare(b));
     restaurantList.forEach((uniqueRestaurant) => {
         $('#restaurantList').append(`
         <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
@@ -170,6 +172,7 @@ function renderAddNewEntryPage() {
     $('#js-main').html(`
         <button type="button" id="homeButton" class="navigation">Home</button>
         <h1>Add New Entry</h1>
+        <p>Select a photo of your dish, click "Upload Photo", and add in details below</p> 
         <form action="/upload" id="uploadForm" method="post" enctype="multipart/form-data">
             <label for="photoUpload">1.</label>
             <input type="file" name="photoUpload" id="photoUpload" accept="image/*" class="editMeal">
@@ -179,9 +182,9 @@ function renderAddNewEntryPage() {
         <div id="imageDisplayArea"></div>
         <form id="addEntryForm">
             <label for="restaurantName">3. Restaurant Name</label>
-            <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName" class="editMeal">
+            <input type="text" name="restaurantName" placeholder="Restaurant Name" id="restaurantName" class="editMeal" required>
             <label for="dishName">4. Dish Name</label>
-            <input type="text" name="dishName" placeholder="Dish Name" id="dishName" class="editMeal">
+            <input type="text" name="dishName" placeholder="Dish Name" id="dishName" class="editMeal" required>
             <label for="entryText">5. Review</label>
             <textarea name="entryText" cols="40" rows="5" id="entryText" placeholder="Detail your restaurant experience here" class="editMeal"></textarea>
             <button>Add Entry</button>
@@ -264,6 +267,7 @@ function handleRestaurantClick(restaurantsData) {
         $('#js-main').html(`
             <button type="button" id="homeButton" class="navigation">Home</button>
             <h1>Meals at ${e.target.id}</h1>
+            <p>Select an entry below to edit</p>
             <section id="mealList" class="mealList">
             </section>
         `);
