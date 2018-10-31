@@ -5,6 +5,7 @@ let restaurantName = '';
 let entryText = '';
 let dishName = '';
 let imageURL = '';
+let imgString = '';
 
 function renderHomepage() {
     $('#js-main').html(`
@@ -205,6 +206,9 @@ function handleUploadSubmitButton() {
             url: '/upload',
             type: 'POST',
             processData: false,
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem('jwt')
+            },
             data: fd,
             contentType: false,
             success: (send) => {
@@ -278,16 +282,26 @@ function handleRestaurantClick(restaurantsData) {
                 let convertDate = new Date(meal.created);
                 console.log(convertDate);
                 console.log(convertDate.toDateString());
+                console.log(meal.imageURL.length);
+                if (meal.imageURL.length > 1) {
+                    imgString = (`<img class="imgOffset" src="${meal.imageURL}" alt="${meal.dish}"/>`);
+                    console.log(imgString);
+                } else {
+                    imgString = ``;
+                };
+                console.log(imgString);
+                //<img class="imgOffset" src="${meal.imageURL}" alt="${meal.dish}"/>
                 $('#mealList').append(`
                     <div class="card center">
                         <a class="card-link" href="#" id="${meal.id}">${meal.dish}</a>
-                        <img class="imgOffset" src="${meal.imageURL}" alt="${meal.dish}"/>
-                        <p>Date: ${convertDate.toDateString().substr(4,12)}</p>
+                        ${imgString}
+                        <p class="meal-date">Date: ${convertDate.toDateString().substr(4,12)}</p>
                         <p>Review: ${meal.content}</p>
                     </div>
                 `);
             };
         });
+        imgString = '';
         handleMealClick(restaurantsData);
         handleHomeButton();
     });
