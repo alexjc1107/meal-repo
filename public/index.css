@@ -95,6 +95,10 @@ ul li a:hover {
     margin-bottom: 10px;
 }
 
+.meal-date {
+    margin-top: 25px;
+}
+
 .deleteEntryButton {
     margin-bottom: 50px;
 }
@@ -152,6 +156,9 @@ button:active {
     main {
         max-width: 90%;
     }
+    .meal-date {
+        margin-top: 25px;
+    }
 }
 
 @media (min-width: 720px) {
@@ -160,6 +167,9 @@ button:active {
     }
     main {
         max-width: 80%;
+    }
+    .meal-date {
+        margin-top: 30px;
     }
 }
 
@@ -170,6 +180,9 @@ button:active {
     main {
         max-width: 55%;
     }
+    .meal-date {
+        margin-top: 35px;
+    }
 }
 
 @media (min-width: 1440px) {
@@ -178,5 +191,8 @@ button:active {
     }
     main {
         max-width: 55%;
+    }
+    .meal-date {
+        margin-top: 40px;
     }
 }

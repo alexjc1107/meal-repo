@@ -11,6 +11,7 @@ const morgan = require('morgan');
 const { router: usersRouter } = require('./userRouter.js');
 const { router: mealRouter } = require('./mealRouter.js');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
@@ -20,6 +21,7 @@ app.use('/api/auth/', authRouter);
 app.use('/meal', mealRouter)
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
+app.use(jwtAuth);
 
 // handle storing uploads on server
 let storage = multer.diskStorage({
@@ -33,8 +35,8 @@ let storage = multer.diskStorage({
 
 let upload = multer({ storage: storage });
 
-app.post('/upload', upload.single('photoUpload'), (req, res, next) => {
-    res.json('uploads/' + req.file.filename);
+app.post('/upload', jwtAuth, upload.single('photoUpload'), (req, res, next) => {
+    res.status(201).json('uploads/' + req.file.filename);
 });
 
 // connects to database, then starts the server
