@@ -101,6 +101,11 @@ ul li a:hover {
 
 .deleteEntryButton {
     margin-bottom: 50px;
+    color: red;
+}
+
+.submitEditButton {
+    margin-bottom: 50px;
 }
 
 img {
