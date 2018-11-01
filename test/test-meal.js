@@ -36,12 +36,8 @@ describe('Meal endpoints', function() {
     });
 
     describe('/meal', function() {
-        it('Should return a valid auth token', function() {
-            const token = jwt.sign({
-                    //user: {
-                    username
-                    //}
-                },
+        it('Should return status code 200', function() {
+            const token = jwt.sign({ username },
                 JWT_SECRET, {
                     algorithm: 'HS256',
                     subject: username,
@@ -54,7 +50,7 @@ describe('Meal endpoints', function() {
                 .get('/meal')
                 .set('Authorization', `Bearer ${token}`)
                 .then(res => {
-                    //expect(res).to.have.status(200);
+                    expect(res).to.have.status(200);
                     expect(res.body).to.be.an('object');
                 });
         });
