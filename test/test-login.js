@@ -2,7 +2,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const jwt = require('jsonwebtoken');
-const { PORT, DATABASE_URL, JWT_SECRET } = require('../config');
+const { PORT, TEST_DATABASE_URL, JWT_SECRET } = require('../config');
 const { app, runServer, closeServer } = require('../server');
 const { User } = require('../models');
 
@@ -15,7 +15,7 @@ describe('Auth endpoints', function() {
     const password = 'examplePass';
 
     before(function() {
-        return runServer(DATABASE_URL, PORT);
+        return runServer(TEST_DATABASE_URL, PORT);
     });
 
     after(function() {
@@ -71,6 +71,9 @@ describe('Auth endpoints', function() {
                     expect(token).to.be.a('string');
                     const payload = jwt.verify(token, JWT_SECRET, {
                         algorithm: ['HS256']
+                    });
+                    expect(payload.user).to.deep.equal({
+                        username
                     });
                 });
         });

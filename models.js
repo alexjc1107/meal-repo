@@ -46,7 +46,6 @@ mealSchema.methods.serialize = function() {
 
 userSchema.methods.serialize = function() {
     return {
-        id: this._id,
         username: this.username
     };
 }
