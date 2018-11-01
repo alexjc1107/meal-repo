@@ -8,6 +8,7 @@ const multer = require('multer')
 const passport = require('passport');
 require('dotenv').config();
 const morgan = require('morgan');
+const fs = require('fs');
 const { router: usersRouter } = require('./userRouter.js');
 const { router: mealRouter } = require('./mealRouter.js');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
@@ -37,6 +38,12 @@ let upload = multer({ storage: storage });
 
 app.post('/upload', jwtAuth, upload.single('photoUpload'), (req, res, next) => {
     res.status(201).json('uploads/' + req.file.filename);
+});
+
+app.delete('/upload', jwtAuth, (req, res, next) => {
+    console.log(req.body);
+    fs.unlinkSync('./public/' + req.body.imageURL);
+    res.status(201).json('file deleted');
 });
 
 // connects to database, then starts the server
