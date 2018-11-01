@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { PORT, TEST_DATABASE_URL, JWT_SECRET, JWT_EXPIRY } = require('../config');
 const { app, runServer, closeServer } = require('../server');
 const { User, Meal } = require('../models');
+const fs = require('fs');
 
 const expect = chai.expect;
 
@@ -52,18 +53,16 @@ describe('Upload endpoints', function() {
         });
 
         it('POST should return status code 200', function() {
-            let file = {
-                fileName: "test.JPG",
-            }
             return chai
                 .request(app)
                 .post('/upload')
-                .set('Content-Type', 'application/x-www-form-urlencoded')
-                .attach('files', "./public/test.JPG")
-                .field('Content-Type', 'multipart/form-data')
-                .field('fileName', 'test.JPG')
                 .set('Authorization', `Bearer ${token}`)
-                .send(file)
+                //.set('Content-Type', 'application/x-www-form-urlencoded')
+                //.attach('files', "./testimage.JPG")
+                .attach('file', fs.readFileSync('./testimage.JPG'), 'testimage.JPG')
+                //.field('Content-Type', 'multipart/form-data')
+                //.field('fileName', 'test.JPG')
+                //.send(fs.readFileSync('./testimage.JPG'))
                 .then(res => {
                     expect(res).to.have.status(200);
                 });
