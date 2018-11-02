@@ -57,29 +57,23 @@ describe('Upload endpoints', function() {
                 .request(app)
                 .post('/upload')
                 .set('Authorization', `Bearer ${token}`)
-                //.set('Content-Type', 'application/x-www-form-urlencoded')
-                //.attach('files', "./testimage.JPG")
-                .attach('file', fs.readFileSync('./testimage.JPG'), 'testimage.JPG')
-                //.field('Content-Type', 'multipart/form-data')
-                //.field('fileName', 'test.JPG')
-                //.send(fs.readFileSync('./testimage.JPG'))
+                .attach('photoUpload', fs.readFileSync('./testimage.JPG'), 'testimage.JPG')
                 .then(res => {
                     expect(res).to.have.status(200);
                 });
         });
 
-        /*it('DELETE should return status code 200', function() {
+        it('DELETE should return status code 200', function() {
             return chai
                 .request(app)
-                .delete('/meal')
+                .delete('/upload')
                 .send({
-                    id: mealId
+                    imageURL: './uploads/testimage.JPG'
                 })
                 .set('Authorization', `Bearer ${token}`)
                 .then(res => {
                     expect(res).to.have.status(200);
-                    expect(res.body).to.be.an('object');
                 });
-        });*/
+        });
     });
 });

@@ -202,6 +202,7 @@ function handleUploadSubmitButton() {
     $('#uploadForm').on('click', '#photoUploadButton', (e) => {
         console.log('upload prevented default behavior')
         let fd = new FormData($("form").get(0));
+        console.log(fd);
         e.preventDefault();
         $.ajax({
             url: '/upload',

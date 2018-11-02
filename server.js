@@ -35,8 +35,19 @@ let storage = multer.diskStorage({
 });
 
 let upload = multer({ storage: storage });
+//let upload = multer().single('photoUpload')
 
 app.post('/upload', jwtAuth, upload.single('photoUpload'), (req, res, next) => {
+    /*upload(req, res, function(err) {
+        if (err instanceof multer.MulterError) {
+            // A Multer error occurred when uploading.
+            console.log(err);
+        } else if (err) {
+            // An unknown error occurred when uploading.
+            console.log(err);
+        };
+    });*/
+    console.log(req.file);
     res.status(200).json('uploads/' + req.file.filename);
 });
 
