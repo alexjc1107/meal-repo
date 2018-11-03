@@ -109,6 +109,7 @@ function renderUserPage(restaurantsData) {
         <ul id="restaurantList">
         </ul>
     `);
+    // filters our a list of unique restaurants the user has entries for
     let restaurantList = [];
     let counter = 0;
     restaurantsData.forEach((meal) => {
@@ -236,6 +237,7 @@ function handleRestaurantClick(restaurantsData) {
             <section id="mealList" class="mealList">
             </section>
         `);
+        // appends cards for each meal and displays an image if it exists
         restaurantsData.forEach((meal) => {
             if (meal.restaurant == e.target.id && meal.username == loginUsername) {
                 let convertDate = new Date(meal.created);
@@ -324,6 +326,7 @@ function handleDeleteEntryButton(mealId, imageURL) {
             }),
             error: (err) => console.log(err)
         });
+        // deletes image on server if it exists
         if (imageURL.length > 1) {
             $.ajax({
                 url: '/upload',

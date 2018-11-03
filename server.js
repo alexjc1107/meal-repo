@@ -37,12 +37,10 @@ let storage = multer.diskStorage({
 let upload = multer({ storage: storage });
 
 app.post('/upload', jwtAuth, upload.single('photoUpload'), (req, res, next) => {
-    //console.log(req.file);
     res.status(200).json('uploads/' + req.file.filename);
 });
 
 app.delete('/upload', jwtAuth, (req, res, next) => {
-    //console.log(req.body);
     fs.unlinkSync('./public/' + req.body.imageURL);
     res.status(200).json('file deleted');
 });
