@@ -6,11 +6,8 @@ const { PORT, TEST_DATABASE_URL, JWT_SECRET, JWT_EXPIRY } = require('../config')
 const { app, runServer, closeServer } = require('../server');
 const { User, Meal } = require('../models');
 const fs = require('fs');
-
 const expect = chai.expect;
-
 chai.use(chaiHttp);
-
 let token = '';
 
 describe('Upload endpoints', function() {

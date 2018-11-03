@@ -30,14 +30,9 @@ function renderHomepage() {
 }
 
 function handleLoginButton() {
-    console.log('handleLoginButton ran');
     $('#loginForm').on('submit', (e) => {
         e.preventDefault();
-        console.log('log in clicked');
         loginUsername = $('#loginUsername').val();
-        console.log(loginUsername);
-        const loginPassword = $('#loginPassword').val();
-        console.log(loginPassword);
         $.ajax({
             url: '/api/auth/login/',
             type: 'POST',
@@ -48,10 +43,7 @@ function handleLoginButton() {
                 "password": $('#loginPassword').val()
             }),
             success: (next) => {
-                console.log('authenticated');
-                console.log(next);
                 localStorage.setItem('jwt', next.authToken);
-                console.log(localStorage.getItem('jwt'));
                 getRestaurants();
             },
             error: (err) => {
@@ -64,14 +56,8 @@ function handleLoginButton() {
 }
 
 function handleSignUpButton() {
-    console.log('handleSignUpButton ran');
     $('#signUpForm').on('submit', (e) => {
         e.preventDefault();
-        console.log('sign up clicked');
-        loginUsername = $('#signUpUsername').val();
-        console.log(loginUsername);
-        const signUpPassword = $('#signUpPassword').val();
-        console.log(signUpPassword);
         $.ajax({
             url: '/api/users/',
             type: 'POST',
@@ -81,14 +67,12 @@ function handleSignUpButton() {
                 'username': $('#signUpUsername').val(),
                 'password': $('#signUpPassword').val()
             }),
-            success: (next) => {
-                console.log('user created');
+            success: () => {
                 $("#signUpForm").trigger('reset');
                 alert(`Username registered successfully. Login to continue.`);
             },
             error: (err) => {
                 console.log(err);
-                console.log("usersignupfailed");
                 $("#signUpForm").trigger('reset');
                 alert(`${err.responseJSON.location} ${err.responseJSON.message}`);
             }
@@ -104,7 +88,6 @@ function getRestaurants() {
             "Authorization": "Bearer " + localStorage.getItem('jwt')
         },
         success: (next) => {
-            console.log(next);
             renderUserPage(next);
         },
         error: (err) => {
@@ -114,10 +97,6 @@ function getRestaurants() {
 }
 
 function renderUserPage(restaurantsData) {
-    console.log('renderUserPage ran');
-    console.log(loginUsername);
-    console.log(restaurantsData);
-
     $('#js-main').html(`
         <p class="welcome">Welcome ${loginUsername}</p>
         <div class="navigation">
@@ -145,7 +124,6 @@ function renderUserPage(restaurantsData) {
         <li><a href="#" id="${uniqueRestaurant}" class="restaurantLI">${uniqueRestaurant}</a></li>
     `);
     });
-    console.log(restaurantList);
     handleLogoutButton();
     handleAddNewEntryButton();
     handleRestaurantClick(restaurantsData);
@@ -153,24 +131,19 @@ function renderUserPage(restaurantsData) {
 }
 
 function handleLogoutButton() {
-    console.log('handleLogoutButton ran');
     $('#logOutButton').on('click', (e) => {
-        console.log('log out clicked');
         localStorage.setItem('jwt', '');
         handleHome();
     });
 }
 
 function handleAddNewEntryButton() {
-    console.log('handleAddNewEntryButton ran');
     $('#addNewEntryButton').on('click', (e) => {
-        console.log('add new entry clicked');
         renderAddNewEntryPage();
     });
 }
 
 function renderAddNewEntryPage() {
-    console.log('renderAddNewEntryPage ran');
     $('#js-main').html(`
         <button type="button" id="homeButton" class="navigation">Home</button>
         <h1>Add New Entry</h1>
@@ -198,11 +171,8 @@ function renderAddNewEntryPage() {
 }
 
 function handleUploadSubmitButton() {
-    console.log('handleUploadSubmitButton ran');
     $('#uploadForm').on('click', '#photoUploadButton', (e) => {
-        console.log('upload prevented default behavior')
         let fd = new FormData($("form").get(0));
-        console.log(fd);
         e.preventDefault();
         $.ajax({
             url: '/upload',
@@ -214,7 +184,6 @@ function handleUploadSubmitButton() {
             data: fd,
             contentType: false,
             success: (send) => {
-                console.log(send);
                 $('#imageDisplayArea').html(`
                     <img src="${send}" alt="User uploaded image" />
                 `);
@@ -228,17 +197,8 @@ function handleUploadSubmitButton() {
 }
 
 function handleAddEntryButton() {
-    console.log('handleAddEntryButton ran');
     $('#addEntryForm').on('submit', (e) => {
         e.preventDefault();
-        console.log('add entry clicked');
-        restaurantName = $('#restaurantName').val();
-        console.log(restaurantName);
-        dishName = $('#dishName').val();
-        console.log(dishName);
-        entryText = $('#entryText').val();
-        console.log(entryText);
-        console.log(imageURL);
         $.ajax({
             url: '/meal',
             type: 'POST',
@@ -254,8 +214,7 @@ function handleAddEntryButton() {
                 'username': loginUsername,
                 'imageURL': imageURL
             }),
-            success: (send) => {
-                console.log(send);
+            success: () => {
                 imageURL = '';
             },
             error: (err) => {
@@ -277,21 +236,14 @@ function handleRestaurantClick(restaurantsData) {
             <section id="mealList" class="mealList">
             </section>
         `);
-        console.log(e.target.id);
         restaurantsData.forEach((meal) => {
             if (meal.restaurant == e.target.id && meal.username == loginUsername) {
-                console.log(meal);
                 let convertDate = new Date(meal.created);
-                console.log(convertDate);
-                console.log(convertDate.toDateString());
-                console.log(meal.imageURL.length);
                 if (meal.imageURL.length > 1) {
                     imgString = (`<img class="imgOffset" src="${meal.imageURL}" alt="${meal.dish}"/>`);
-                    console.log(imgString);
                 } else {
                     imgString = ``;
                 };
-                console.log(imgString);
                 $('#mealList').append(`
                     <div class="card center">
                         <a class="card-link" href="#" id="${meal.id}">${meal.dish}</a>
@@ -311,9 +263,6 @@ function handleRestaurantClick(restaurantsData) {
 function handleMealClick(restaurantsData) {
     $('#mealList').on('click', (e) => {
         e.preventDefault();
-        console.log('handleMealClick ran');
-        console.log(e.target.id);
-        console.log(restaurantsData.find((mealId) => mealId.id == e.target.id).created);
         $('#js-main').html(`
             <button type="button" id="homeButton" class="navigation">Home</button>
             <h1>Editing Meal: ${restaurantsData.find(mealId => mealId.id == e.target.id).dish}</h1>
@@ -329,9 +278,6 @@ function handleMealClick(restaurantsData) {
             </form>
             
         `);
-        $('entryText').value = restaurantsData.find((mealId) => mealId.id == e.target.id).content;
-        let objIndex = restaurantsData.findIndex((entry) => entry.id == e.target.id);
-        console.log(objIndex);
         handleEditSubmitButton(e.target.id);
         handleDeleteEntryButton(e.target.id, restaurantsData.find((mealId) => mealId.id == e.target.id).imageURL);
         handleHomeButton();
@@ -339,17 +285,8 @@ function handleMealClick(restaurantsData) {
 }
 
 function handleEditSubmitButton(mealId) {
-    console.log('handleEditSubmitButton ran');
     $('#editEntryForm').on('submit', (e) => {
         e.preventDefault();
-        console.log('edit entry clicked');
-        restaurantName = $('#restaurantName').val();
-        console.log(restaurantName);
-        dishName = $('#dishName').val();
-        console.log(dishName);
-        entryText = $('#entryText').val();
-        console.log(entryText);
-
         $.ajax({
             url: '/meal',
             type: 'PUT',
@@ -364,7 +301,6 @@ function handleEditSubmitButton(mealId) {
                 'content': $('#entryText').val(),
                 'id': mealId
             }),
-            success: (send) => console.log(send),
             error: (err) => {
                 console.log(err);
             }
@@ -374,7 +310,6 @@ function handleEditSubmitButton(mealId) {
 }
 
 function handleDeleteEntryButton(mealId, imageURL) {
-    console.log('handleDeleteEntryButton ran');
     $('#deleteEntryButton').on('click', (e) => {
         $.ajax({
             url: '/meal',
@@ -387,7 +322,6 @@ function handleDeleteEntryButton(mealId, imageURL) {
             data: JSON.stringify({
                 'id': mealId
             }),
-            success: (res) => console.log(res),
             error: (err) => console.log(err)
         });
         if (imageURL.length > 1) {
@@ -402,7 +336,6 @@ function handleDeleteEntryButton(mealId, imageURL) {
                 data: JSON.stringify({
                     'imageURL': imageURL
                 }),
-                success: (res) => console.log(res),
                 error: (err) => console.log(err)
             });
         };
@@ -411,7 +344,6 @@ function handleDeleteEntryButton(mealId, imageURL) {
 }
 
 function handleHomeButton() {
-    console.log('handleHomeButton ran');
     $('#homeButton').on('click', (e) => {
         imageURL = '';
         getRestaurants();
