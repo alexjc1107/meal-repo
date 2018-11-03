@@ -8,6 +8,7 @@ const multer = require('multer')
 const passport = require('passport');
 require('dotenv').config();
 const morgan = require('morgan');
+const fs = require('fs');
 const { router: usersRouter } = require('./userRouter.js');
 const { router: mealRouter } = require('./mealRouter.js');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
@@ -34,9 +35,26 @@ let storage = multer.diskStorage({
 });
 
 let upload = multer({ storage: storage });
+//let upload = multer().single('photoUpload')
 
 app.post('/upload', jwtAuth, upload.single('photoUpload'), (req, res, next) => {
-    res.status(201).json('uploads/' + req.file.filename);
+    /*upload(req, res, function(err) {
+        if (err instanceof multer.MulterError) {
+            // A Multer error occurred when uploading.
+            console.log(err);
+        } else if (err) {
+            // An unknown error occurred when uploading.
+            console.log(err);
+        };
+    });*/
+    console.log(req.file);
+    res.status(200).json('uploads/' + req.file.filename);
+});
+
+app.delete('/upload', jwtAuth, (req, res, next) => {
+    console.log(req.body);
+    fs.unlinkSync('./public/' + req.body.imageURL);
+    res.status(200).json('file deleted');
 });
 
 // connects to database, then starts the server

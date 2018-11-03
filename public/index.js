@@ -6,6 +6,7 @@ let entryText = '';
 let dishName = '';
 let imageURL = '';
 let imgString = '';
+let restaurantData = '';
 
 function renderHomepage() {
     $('#js-main').html(`
@@ -188,7 +189,7 @@ function renderAddNewEntryPage() {
             <input type="text" name="dishName" placeholder="Dish Name" id="dishName" class="editMeal" required>
             <label for="entryText">5. Review</label>
             <textarea name="entryText" cols="40" rows="5" id="entryText" placeholder="Detail your restaurant experience here" class="editMeal"></textarea>
-            <button>Add Entry</button>
+            <button class="submitEditButton">Add Entry</button>
         </form>
     `);
     handleAddEntryButton();
@@ -200,7 +201,8 @@ function handleUploadSubmitButton() {
     console.log('handleUploadSubmitButton ran');
     $('#uploadForm').on('click', '#photoUploadButton', (e) => {
         console.log('upload prevented default behavior')
-        var fd = new FormData($("form").get(0));
+        let fd = new FormData($("form").get(0));
+        console.log(fd);
         e.preventDefault();
         $.ajax({
             url: '/upload',
@@ -290,7 +292,6 @@ function handleRestaurantClick(restaurantsData) {
                     imgString = ``;
                 };
                 console.log(imgString);
-                //<img class="imgOffset" src="${meal.imageURL}" alt="${meal.dish}"/>
                 $('#mealList').append(`
                     <div class="card center">
                         <a class="card-link" href="#" id="${meal.id}">${meal.dish}</a>
@@ -332,7 +333,7 @@ function handleMealClick(restaurantsData) {
         let objIndex = restaurantsData.findIndex((entry) => entry.id == e.target.id);
         console.log(objIndex);
         handleEditSubmitButton(e.target.id);
-        handleDeleteEntryButton(e.target.id);
+        handleDeleteEntryButton(e.target.id, restaurantsData.find((mealId) => mealId.id == e.target.id).imageURL);
         handleHomeButton();
     });
 }
@@ -372,7 +373,7 @@ function handleEditSubmitButton(mealId) {
     });
 }
 
-function handleDeleteEntryButton(mealId) {
+function handleDeleteEntryButton(mealId, imageURL) {
     console.log('handleDeleteEntryButton ran');
     $('#deleteEntryButton').on('click', (e) => {
         $.ajax({
@@ -389,6 +390,22 @@ function handleDeleteEntryButton(mealId) {
             success: (res) => console.log(res),
             error: (err) => console.log(err)
         });
+        if (imageURL.length > 1) {
+            $.ajax({
+                url: '/upload',
+                type: 'DELETE',
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem('jwt')
+                },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify({
+                    'imageURL': imageURL
+                }),
+                success: (res) => console.log(res),
+                error: (err) => console.log(err)
+            });
+        };
         getRestaurants();
     });
 }
