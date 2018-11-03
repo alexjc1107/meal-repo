@@ -29,6 +29,31 @@ Edit Or Delete A Meal Entry:
 
 ![meal edit screen](https://user-images.githubusercontent.com/30877265/47947055-af07b980-deeb-11e8-8d5c-223815a0c201.JPG)
 
+## API Endpoints
+### api/users/
+#### POST
+* Creates a new user and stores the username and hashed password
+
+### api/auth/
+#### POST
+* Returns a JWT token when a user authenticates successfully with username and password
+
+### meal/
+#### GET
+* Returns all meals when a client presents a valid token
+#### POST
+* Creates a new meal entry when a client presents a valid token
+#### PUT
+* Updates an existing meal entry when a client presents a valid token
+#### DELETE
+* Deletes an existing meal entry when a client presents a valid token
+
+### upload/
+#### POST
+* Uploads an image when a client presents a valid token, image file, and returns the filepath
+#### DELETE
+* Deletes an existing image when a client presents a valid token
+
 ## Technologies Used
 ### Front End
 * HTML
