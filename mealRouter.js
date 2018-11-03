@@ -10,7 +10,6 @@ router.use(jwtAuth);
 router.use(bodyParser.json());
 
 router.get('/', (req, res) => {
-    console.log(req.body);
     Meal
         .find()
         .then(meals => {
@@ -33,7 +32,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    console.log(req.body.restaurant);
     Meal
         .create({
             restaurant: req.body.restaurant,
@@ -50,7 +48,6 @@ router.post('/', (req, res) => {
 });
 
 router.put('/', (req, res) => {
-    console.log(req.body.restaurant);
     Meal
         .findByIdAndUpdate(req.body.id, {
             restaurant: req.body.restaurant,
